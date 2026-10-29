@@ -1,0 +1,224 @@
+/* ProofChain Evidence — styles. No frameworks, no webfonts, works offline. */
+
+:root {
+  --ink: #1a2332;
+  --ink-soft: #43536b;
+  --navy: #10243e;
+  --navy-2: #1b3a5f;
+  --gold: #b08d3c;
+  --paper: #f7f4ec;
+  --card: #ffffff;
+  --line: #ddd5c3;
+  --ok-bg: #e7f5ec;
+  --ok: #146c2e;
+  --ok-line: #8fd0a2;
+  --bad-bg: #fdecec;
+  --bad: #a11212;
+  --bad-line: #eba0a0;
+  --warn-bg: #fdf6e0;
+  --warn: #7a5b00;
+  --radius: 10px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.55;
+}
+
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+
+/* Header */
+.site-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy-2));
+  color: #fff;
+  padding: 34px 0 26px;
+  border-bottom: 4px solid var(--gold);
+}
+.brand { display: flex; gap: 16px; align-items: center; }
+.brand-mark {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.site-header h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  letter-spacing: 0.3px;
+}
+.tagline { margin: 2px 0 0; color: #c9d6e8; font-size: 15px; }
+.privacy-note { margin: 16px 0 0; font-size: 13px; color: #9fb4cf; }
+
+/* Cards */
+main { padding: 24px 0 8px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(26, 35, 50, 0.06);
+}
+.card h2 {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  color: var(--navy);
+}
+.card h3 { margin: 18px 0 8px; font-size: 16px; color: var(--navy); }
+.honest {
+  background: var(--warn-bg);
+  border-left: 4px solid var(--gold);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+}
+.muted { color: var(--ink-soft); font-size: 14px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab {
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--navy);
+  background: transparent;
+  color: var(--navy);
+  cursor: pointer;
+}
+.tab.active { background: var(--navy); color: #fff; }
+.tab:focus-visible, .dropzone:focus-visible, .btn:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Fields */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+.field { display: block; margin-bottom: 14px; }
+.field > span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid #b9b09a;
+  border-radius: 6px;
+  background: #fffdf8;
+  color: var(--ink);
+}
+.field textarea { font-family: var(--mono); font-size: 12.5px; resize: vertical; }
+
+/* Dropzone */
+.dropzone {
+  border: 2px dashed #a4936d;
+  border-radius: var(--radius);
+  padding: 30px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #fffdf6;
+  margin: 6px 0 14px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dropzone:hover, .dropzone.dragging { background: #fdf3d8; border-color: var(--gold); }
+.dz-title { margin: 0; font-size: 18px; font-weight: 700; color: var(--navy); }
+.dz-sub { margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); }
+
+/* Status + facts + JSON */
+.status {
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-bottom: 14px;
+  background: #eef3fa;
+  border: 1px solid #b9cbe4;
+}
+.status.error { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad); }
+.status.ok { background: var(--ok-bg); border-color: var(--ok-line); color: var(--ok); }
+.facts { display: grid; grid-template-columns: 150px 1fr; gap: 4px 14px; margin: 0 0 12px; font-size: 14px; }
+.facts dt { font-weight: 600; color: var(--ink-soft); }
+.facts dd { margin: 0; word-break: break-all; }
+.facts dd.mono { font-family: var(--mono); font-size: 12.5px; }
+.json {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--navy);
+  color: #d7e6f7;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-height: 380px;
+  overflow-y: auto;
+  white-space: pre;
+}
+
+/* Buttons */
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 4px; }
+.btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--navy);
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+}
+.btn.primary { background: var(--navy); color: #fff; }
+.btn:hover { filter: brightness(1.06); }
+
+/* Custody timeline */
+.timeline { margin: 8px 0 14px; padding-left: 22px; }
+.timeline li { margin-bottom: 8px; font-size: 14px; }
+.timeline .t-event { font-weight: 700; color: var(--navy); }
+.timeline .t-meta { color: var(--ink-soft); font-size: 13px; }
+.timeline .t-digest { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); word-break: break-all; }
+
+/* Verdict */
+.verdict {
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-top: 6px;
+  border: 2px solid;
+}
+.verdict.match { background: var(--ok-bg); border-color: var(--ok); }
+.verdict.mismatch { background: var(--bad-bg); border-color: var(--bad); }
+.verdict h3 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-family: Georgia, serif;
+}
+.verdict.match h3 { color: var(--ok); }
+.verdict.mismatch h3 { color: var(--bad); }
+.verdict p { margin: 4px 0; font-size: 14px; }
+.verdict .hashline { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+.verdict ul { margin: 8px 0 0; padding-left: 20px; font-size: 14px; }
+
+/* How it works + footer */
+.how ol { margin: 8px 0; padding-left: 22px; }
+.how li { margin-bottom: 6px; }
+.how a { color: var(--navy-2); }
+.site-footer {
+  padding: 18px 0 30px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  text-align: center;
+}

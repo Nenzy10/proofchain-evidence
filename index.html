@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProofChain Evidence — Document Integrity for Legal Evidence</title>
+<meta name="description" content="ProofChain Evidence computes a SHA-256 fingerprint of an evidence file in your browser and issues a tamper-evident chain-of-custody receipt. Verify any file against its receipt with a clear MATCH / MISMATCH verdict.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">&#9878;</div>
+      <div>
+        <h1>ProofChain Evidence</h1>
+        <p class="tagline">Document-integrity verification &amp; chain-of-custody receipts for legal evidence</p>
+      </div>
+    </div>
+    <p class="privacy-note">100% client-side. Your files never leave this device &mdash; hashing happens in your browser.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="intro card">
+    <h2>What this proves &mdash; and what it does not</h2>
+    <p>
+      ProofChain Evidence fingerprints a file with <strong>SHA-256</strong> at the moment of intake and issues a
+      <strong>canonical evidence receipt</strong>: file name, size, hash, timestamp, and case/matter ID, with a
+      hash-chained <strong>chain-of-custody log</strong>. Later, anyone holding the receipt can re-hash the file and
+      get a clear <strong>MATCH / MISMATCH</strong> verdict &mdash; proof the file's contents have not changed since
+      the moment it was hashed.
+    </p>
+    <p class="honest">
+      Honest limits: a hash proves <em>content integrity from the moment of hashing</em>. It does not prove who
+      created a file, when it was originally created, or that its contents are true. This tool is an
+      integrity-verification aid &mdash; it is not a court certification and makes no claim of legal admissibility.
+    </p>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Modes">
+    <button class="tab active" data-tab="create" role="tab" aria-selected="true">1 &middot; Create receipt</button>
+    <button class="tab" data-tab="custody" role="tab" aria-selected="false">2 &middot; Chain of custody</button>
+    <button class="tab" data-tab="verify" role="tab" aria-selected="false">3 &middot; Verify evidence</button>
+  </nav>
+
+  <!-- ============ CREATE ============ -->
+  <section id="tab-create" class="tab-panel card">
+    <h2>Create an evidence receipt</h2>
+    <div class="grid">
+      <label class="field">
+        <span>Case / matter ID</span>
+        <input id="create-case" type="text" placeholder="e.g. 2026-CV-0142" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>Custodian (name or ID, optional)</span>
+        <input id="create-actor" type="text" placeholder="e.g. J. Alvarez, Evidence Intake" autocomplete="off">
+      </label>
+    </div>
+
+    <div id="create-drop" class="dropzone" tabindex="0" role="button" aria-label="Drop an evidence file here or click to choose">
+      <p class="dz-title">Drop an evidence file here</p>
+      <p class="dz-sub">or click to choose a file &mdash; it is hashed locally, never uploaded</p>
+      <input id="create-file" type="file" hidden>
+    </div>
+
+    <div id="create-status" class="status" hidden></div>
+
+    <div id="create-result" hidden>
+      <h3>Evidence receipt</h3>
+      <dl class="facts" id="create-facts"></dl>
+      <pre id="create-json" class="json" aria-label="Receipt JSON"></pre>
+      <div class="actions">
+        <button id="create-download" class="btn primary">Download receipt (.json)</button>
+        <button id="create-copy" class="btn">Copy receipt JSON</button>
+        <button id="create-tocustody" class="btn">Add a custody event &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CUSTODY ============ -->
+  <section id="tab-custody" class="tab-panel card" hidden>
+    <h2>Extend the chain of custody</h2>
+    <p class="muted">
+      Paste a receipt (or use the one you just created), then record each hand-off or access. Every event is
+      hash-chained to the previous one, so later edits to the log are detectable.
+    </p>
+    <label class="field">
+      <span>Receipt JSON</span>
+      <textarea id="custody-receipt" rows="8" placeholder="Paste a ProofChain Evidence receipt JSON here&hellip;" spellcheck="false"></textarea>
+    </label>
+    <div class="actions">
+      <button id="custody-uselast" class="btn">Use the receipt I just created</button>
+      <button id="custody-check" class="btn">Check receipt integrity</button>
+    </div>
+    <div id="custody-status" class="status" hidden></div>
+
+    <div class="grid">
+      <label class="field">
+        <span>Event type</span>
+        <select id="custody-event">
+          <option value="TRANSFERRED">Transferred to another custodian</option>
+          <option value="ACCESSED">Accessed / reviewed</option>
+          <option value="STORED">Placed in storage</option>
+          <option value="COPIED">Copy made</option>
+          <option value="VERIFIED">Verified against receipt</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Actor (name or ID)</span>
+        <input id="custody-actor" type="text" placeholder="e.g. M. Chen, Forensics" autocomplete="off">
+      </label>
+    </div>
+    <label class="field">
+      <span>Note</span>
+      <input id="custody-note" type="text" placeholder="e.g. Handed to opposing counsel's expert for inspection" autocomplete="off">
+    </label>
+    <div class="actions">
+      <button id="custody-append" class="btn primary">Append custody event</button>
+    </div>
+
+    <div id="custody-result" hidden>
+      <h3>Updated receipt</h3>
+      <ol id="custody-timeline" class="timeline"></ol>
+      <pre id="custody-json" class="json" aria-label="Updated receipt JSON"></pre>
+      <div class="actions">
+        <button id="custody-download" class="btn primary">Download updated receipt (.json)</button>
+        <button id="custody-copy" class="btn">Copy receipt JSON</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VERIFY ============ -->
+  <section id="tab-verify" class="tab-panel card" hidden>
+    <h2>Verify evidence against a receipt</h2>
+    <label class="field">
+      <span>Receipt JSON</span>
+      <textarea id="verify-receipt" rows="8" placeholder="Paste the evidence receipt JSON here&hellip;" spellcheck="false"></textarea>
+    </label>
+    <div class="actions">
+      <button id="verify-uselast" class="btn">Use the receipt I just created</button>
+    </div>
+
+    <div id="verify-drop" class="dropzone" tabindex="0" role="button" aria-label="Drop the evidence file here or click to choose">
+      <p class="dz-title">Drop the evidence file here</p>
+      <p class="dz-sub">or click to choose the file to check against the receipt</p>
+      <input id="verify-file" type="file" hidden>
+    </div>
+
+    <div id="verify-status" class="status" hidden></div>
+    <div id="verify-verdict" hidden></div>
+  </section>
+
+  <section class="card how">
+    <h2>How it works</h2>
+    <ol>
+      <li><strong>Intake.</strong> The file is read locally and hashed with SHA-256 (Web Crypto API). The original file is never uploaded or stored.</li>
+      <li><strong>Receipt.</strong> A canonical JSON receipt binds the hash to the file name, byte size, case/matter ID, and UTC timestamp. A digest of that core anchors the receipt.</li>
+      <li><strong>Custody.</strong> Each custody event is hash-chained to the previous event and to the core digest. Altering any earlier entry breaks every later link &mdash; tampering is detectable.</li>
+      <li><strong>Verification.</strong> Re-hash the file and compare against the receipt. One changed bit produces a different hash and a MISMATCH verdict.</li>
+    </ol>
+    <p class="muted">
+      Built for the BLI Legal Tech Hackathon 2 (Blockchain Legal Institute) on DoraHacks. ProofChain Evidence extends
+      <a href="https://proofreceipt.netlify.app" target="_blank" rel="noopener">ProofReceipt</a> &mdash; a live
+      SHA-256 delivery-verification product &mdash; to legal evidence handling. Open source; see the repository for
+      architecture and threat-model documentation.
+    </p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>ProofChain Evidence &middot; Integrity verification aid &mdash; not a legal certification. Files are processed locally in your browser; nothing is uploaded.</p>
+  </div>
+</footer>
+
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
